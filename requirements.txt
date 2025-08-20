@@ -1,0 +1,62 @@
+# Core Discord bot dependencies
+discord.py
+py-cord
+
+# Music streaming
+wavelink
+yt-dlp
+spotipy
+soundcloud-py
+
+# Audio processing
+PyNaCl
+ffmpeg-python
+pydub
+
+# Database
+aiosqlite
+asyncpg
+sqlalchemy
+
+# Redis cache
+redis
+aioredis
+
+# Web dashboard
+aiohttp
+aiohttp-cors
+aiohttp-session
+jinja2
+aiofiles
+
+# API clients
+aiohttp
+requests
+beautifulsoup4
+lxml
+
+# Utilities
+python-dotenv
+colorlog
+humanize
+python-dateutil
+pytz
+
+# Performance
+uvloop
+aiocache
+cachetools
+
+# Lyrics
+lyricsgenius
+
+# Analytics and monitoring
+psutil
+py-cpuinfo
+
+# Development tools (optional, move to requirements-dev.txt in production)
+pytest
+pytest-asyncio
+black
+flake8
+mypy
