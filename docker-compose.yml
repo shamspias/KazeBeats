@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  kazebeats:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: ${CONTAINER_NAME:-kazebeats}
+    restart: ${RESTART_POLICY:-unless-stopped}
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - DEFAULT_PREFIX=${DEFAULT_PREFIX:-!}
+      - OWNER_ID=${OWNER_ID}
+      - BOT_NAME=${BOT_NAME:-KazeBeats}
+      - BOT_VERSION=${BOT_VERSION:-1.0.0}
+      - AUDIO_BITRATE=${AUDIO_BITRATE:-320}
+      - AUDIO_SAMPLE_RATE=${AUDIO_SAMPLE_RATE:-48000}
+      - MAX_VOLUME=${MAX_VOLUME:-200}
+      - DEFAULT_VOLUME=${DEFAULT_VOLUME:-100}
+      - DB_TYPE=${DB_TYPE:-sqlite}
+      - DB_PATH=${DB_PATH:-/app/data/kazebeats.db}
+      - REDIS_ENABLED=${REDIS_ENABLED:-false}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - WEB_ENABLED=${WEB_ENABLED:-true}
+      - WEB_PORT=${WEB_PORT:-8080}
+      - WEB_HOST=${WEB_HOST:-0.0.0.0}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ENABLE_EFFECTS=${ENABLE_EFFECTS:-true}
+      - ENABLE_LYRICS=${ENABLE_LYRICS:-true}
+      - ENABLE_PLAYLISTS=${ENABLE_PLAYLISTS:-true}
+      - ENABLE_AUTO_DJ=${ENABLE_AUTO_DJ:-true}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - GENIUS_API_TOKEN=${GENIUS_API_TOKEN}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+    ports:
+      - "${WEB_PORT:-8080}:${WEB_PORT:-8080}"
+    networks:
+      - kazebeats-network
+    depends_on:
+      - redis
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import requests; requests.get('http://localhost:${WEB_PORT:-8080}/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    container_name: ${CONTAINER_NAME:-kazebeats}-redis
+    restart: ${RESTART_POLICY:-unless-stopped}
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - kazebeats-network
+    command: redis-server --appendonly yes
+
+networks:
+  kazebeats-network:
+    driver: bridge
+    name: kazebeats-network
+
+volumes:
+  redis-data:
+    driver: local
